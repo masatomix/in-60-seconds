@@ -1,49 +1,49 @@
 ## イントロ
-----
+---
 ### UiPath 開発に便利な「Attended Framework」テンプレート
 
 - 「設定ファイルを読み込むための処理を、別ワークフローからコピペして、、」
 - 「エラー処理(例外処理)」
 - 「ログ出力形式」など
 
-----
+---
 
 ### UiPath開発において、**共通化・ルール化したほうがよいモノがいくつかあったり**します。
 
-----
+---
 ### UiPath 社が [UiPath Go!](https://go.uipath.com/)で公開している「Attended Framework」テンプレートを用いることで、これらの**「メンドクサイ、、だけど大事」な部分をテンプレートにおまかせする**ことができます。
 
 
-----
+---
 ![000.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/73777/3e2ca286-89a8-9b7b-16be-1ec35da28737.png)
 
-----
+---
 ![001.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/73777/66a0ba62-a596-2fc7-03a3-0d37c4e510d8.png)
 
-----
+---
 ### この記事の対象の方
 - プロジェクトを作るたびに、設定ファイルExcelを読み込んでDataTableへ入れるSequenceのコピペをしている方
 - 定番の例外処理はどうやるんだっけ？という方
 - ElasticsearchやKibanaでのログの収集・解析に興味がある方
 
-----
+---
 ## 準備・環境
 
 - UiPath Studioは、2018.4.5を用いています。https://go.uipath.com/component/attended-framework を見ると Studio 2018.3.2で開発って書いてありますので、バージョンはそれほどシビアじゃなさそうです。
 
-----
+---
 ## やってみる
-----
+---
 
 ### UiPath Studio で開いてつかってみる
 
 - テンプレートはメインの業務処理を ``Process.xaml`` に書いていく仕組み
 - (デモ実行)
 
-----
+---
 ## いいところやTIPS集
 
-----
+---
 ### 設定ファイル読み込みの標準化
 - **``Data/Config.xlsx``に、設定値をKey/Value形式で管理する機能**を提供してくれます。
 
@@ -51,12 +51,12 @@
 in_Config("logF_BusinessProcessName")  → AttendedFramework  
 ```
 
-----
+---
 
 - ``in_Config``変数は ``Process.xaml`` 全域(?)で利用可能
 ![T03_0.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/73777/150e0b2d-b012-50a4-be7b-fd5b44d23495.png)
 
-----
+---
 ```
 in_Config("logF_BusinessProcessName") = AttendedFramework
 in_Config("Enable_Screenshot") = False  ← あとで出てくる、ApplicationException発生時にスクリーンショットをとるかどうかフラグ
@@ -66,16 +66,16 @@ in_Config("Framework_Version") = 1.1.2.0
 ```
 - Excelファイルに追記することで、もちろん任意の値を追加することが可能です。
 
-----
+---
 ### 定番の例外処理
 - テンプレートは``Process.xaml`` をinvokeしている箇所をまるっと ``Try/Catch/Finally`` で囲っている
 ![T03.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/73777/db2b3030-067a-5ed7-1a46-314205e4d474.png)
 
-----
+---
 - 続いてFinallyで実際の例外処理(含む正常時の処理)が行われます。
 ![T05.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/73777/3e0a7816-4f82-c38b-7c75-a8d30bcbba7b.png)
 
-----
+---
 ### Finallyの条件分岐
 
 - 例外が発生しなかったとき
@@ -85,10 +85,10 @@ in_Config("Framework_Version") = 1.1.2.0
 - それ以外の例外がスローされたとき 
     - スクリーンショットをとって、発生した例外を再スロー
 
-----
+---
 ### デフォルトのテンプレはたいしたことをしていないので、**各社のRPA導入プロジェクトでルールを定め、定めた処理をココに追記しそれを自社独自のテンプレとして配布する**ようにしましょう。
 
-----
+---
 ### **テンプレ側に記述する、ルールとして定める例外処理の例**
 
 - 「``Process.xaml`` を作成する開発者は、業務例外(ビジネス例外)発生時は``BusinessRuleException``をスローすること」としておき、
@@ -97,13 +97,13 @@ in_Config("Framework_Version") = 1.1.2.0
 
 などが考えられます。
 
-----
+---
 ### ログ機能について。
 
 - テンプレートではFinallyの処理のところで「ログフィールドを追加」アクティビティでログのフィールドを追加しています。
 ![E01.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/73777/d22a67f1-9381-8c78-ceb0-e7104871b7f2.png)
 
-----
+---
 
 - ワークフロー終了時に自動出力される実行ログ( C:\Users\[ユーザ名]\AppData\Local\UiPath\Logs]\2019-08-03_Execution.log など)にも、
 
@@ -134,7 +134,7 @@ in_Config("Framework_Version") = 1.1.2.0
 
 - とくに``logF_TransactionStatus`` は先の条件分岐のどこを通ったかを示す結果ステータスなので、このフィールドを確認することでワークフローの正常/異常を確認することができます。
 
-----
+---
 
 ### ログ機能について補足
 
@@ -151,10 +151,10 @@ in_Config("Framework_Version") = 1.1.2.0
 
 - またこのAttended Frameworkが出力するログフォーマットは、さきほどの RE Framework(Robotic Enterprise Framework) と同じフォーマットになっているので、RE Frameworkの出力ログ向けに作られたKibanaのダッシュボードは、そのままAttended Frameworkのワークフローでも利用可能になっているそうです。いい感じです。
 
-----
+---
 Attended Frameworkのよいところのご説明でした。
 
-----
+---
 ### テンプレートとして保存しておくと便利
 
 さてダウンロード・解凍したテンプレートファイルをそのまま使ってきましたが、UiPath Studioで開いた後「テンプレートとして保存」をクリックすると
@@ -171,12 +171,12 @@ Attended Frameworkのよいところのご説明でした。
 他のテンプレートと同様、今後はココからプロジェクトを作成すれば、まさにテンプレートとして使用することが可能です。
 ![image.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/73777/b7714a70-5e8b-e5ca-94be-815a94a2b654.png)
 
-----
+---
 ### テンプレートを複数人で共有する
 
 例外処理のところで「テンプレートには社内独自の例外処理を追記していきましょう」と書きましたが、このようにStudioで改修したプロジェクトファイル群をそのままzipなどでアーカイブして、テンプレートして使いたい方(社内のプロジェクトなら、UiPath Studioをお使いの各開発者)に配布しましょう。配布されたzipファイルは、各人が自分のUiPath Studioで一度開いて、上記の「テンプレートとして保存」をおこなう事で、独自のテンプレートを複数人で共有することが可能となります。
 
-----
+---
 ## まとめ
 
 - 設定ファイル読み込みを自動でやってくれるのはとても助かる
@@ -191,7 +191,7 @@ Attended Frameworkのよいところのご説明でした。
 
 おつかれさまでした。
 
-----
+---
 ## 追記
 
 テンプレートっていちど使い始めると「テンプレート自体に更新がはいったとき」に、どうやって各開発者の端末に反映させるの？って話がでてきます。
@@ -212,7 +212,7 @@ Attended Framework の拡張版は下記で配布しているので、興味が�
 
 - https://github.com/masatomix/My_Attended_Framework
 
-----
+---
 ## 関連リンク
 
 - [Attended Framework(UiPath Go!)](https://go.uipath.com/ja/component/attended-framework)
